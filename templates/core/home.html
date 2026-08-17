@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - DocShare{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 bg-primary text-white rounded">
+                <h2>
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Welcome {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}DocShare{% endif %}!
+                </h2>
+                <p class="mb-0">Upload and share academic documents with your classmates.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stats-card">
+                <div class="number">{{ total_documents }}</div>
+                <div class="label"><i class="fas fa-file-alt me-1"></i>Total Documents</div>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="col-md-6">
+            <div class="stats-card">
+                <div class="number">{{ my_documents }}</div>
+                <div class="label"><i class="fas fa-user me-1"></i>My Documents</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" action="{% url 'AppTodo:home' %}" class="search-box d-flex">
+                {{ search_form.query }}
+                {{ search_form.document_type }}
+                <button type="submit" class="btn btn-gradient">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Document List -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3">
+                <i class="fas fa-list me-2 text-primary"></i>
+                All Documents
+                <span class="badge bg-secondary">{{ page_obj.paginator.count }}</span>
+            </h4>
+        </div>
+        
+        {% if page_obj %}
+            {% for document in page_obj %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card card-hover document-card h-100">
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <i class="fas {{ document.get_file_icon }} file-icon"></i>
+                            </div>
+                            <h5 class="card-title">
+                                <a href="{% url 'AppTodo:document_detail' document.pk %}" class="text-decoration-none text-dark">
+                                    {{ document.title|truncatechars:30 }}
+                                </a>
+                            </h5>
+                            <p class="card-text">{{ document.description|truncatechars:60 }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>{{ document.uploaded_by.username }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-download me-1"></i>{{ document.download_count }}
+                                </small>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-info text-white">
+                                    {{ document.get_document_type_display }}
+                                </span>
+                                {% if document.tags %}
+                                    <span class="badge bg-secondary">{{ document.tags|truncatechars:15 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="btn-group w-100">
+                                <a href="{% url 'AppTodo:document_detail' document.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'AppTodo:document_download' document.pk %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>No documents found</h5>
+                <p class="text-muted">Try different search terms or upload a new document.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'AppTodo:document_create' %}" class="btn btn-gradient">
+                        <i class="fas fa-upload me-2"></i>Upload New Document
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}My Documents - DocShare{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-folder-open text-primary me-2"></i>My Documents</h3>
+        <a href="{% url 'AppTodo:document_create' %}" class="btn btn-gradient">
+            <i class="fas fa-plus me-2"></i>Upload New
+        </a>
+    </div>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for document in page_obj %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card card-hover document-card h-100">
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <i class="fas {{ document.get_file_icon }} file-icon"></i>
+                            </div>
+                            <h5 class="card-title">
+                                <a href="{% url 'AppTodo:document_detail' document.pk %}" class="text-decoration-none text-dark">
+                                    {{ document.title|truncatechars:30 }}
+                                </a>
+                            </h5>
+                            <p class="card-text">{{ document.description|truncatechars:60 }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ document.uploaded_at|date:"d/m/Y" }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-download me-1"></i>{{ document.download_count }}
+                                </small>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-info text-white">
+                                    {{ document.get_document_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="btn-group w-100">
+                                <a href="{% url 'AppTodo:document_detail' document.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'AppTodo:document_edit' document.pk %}" class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'AppTodo:document_delete' document.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+            <h5>You have not uploaded any documents yet</h5>
+            <p class="text-muted">Start by uploading your first document now!</p>
+            <a href="{% url 'AppTodo:document_create' %}" class="btn btn-gradient">
+                <i class="fas fa-upload me-2"></i>Upload Document
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

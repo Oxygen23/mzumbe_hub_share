@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ document.title }} - DocShare{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Document Info -->
+            <div class="card card-hover mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h3>{{ document.title }}</h3>
+                            <p class="text-muted">
+                                <i class="fas fa-user me-1"></i>{{ document.uploaded_by.username }}
+                                <span class="mx-2">|</span>
+                                <i class="fas fa-calendar me-1"></i>{{ document.uploaded_at|date:"d/m/Y H:i" }}
+                            </p>
+                        </div>
+                        <span class="badge bg-info fs-6">{{ document.get_document_type_display }}</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5><i class="fas fa-align-left me-2 text-primary"></i>Description</h5>
+                    <p class="lead">{{ document.description }}</p>
+                    
+                    {% if document.course_code or document.course_name %}
+                        <div class="row mt-3">
+                            {% if document.course_code %}
+                                <div class="col-md-6">
+                                    <small class="text-muted">Course Code:</small>
+                                    <p><strong>{{ document.course_code }}</strong></p>
+                                </div>
+                            {% endif %}
+                            {% if document.course_name %}
+                                <div class="col-md-6">
+                                    <small class="text-muted">Course Name:</small>
+                                    <p><strong>{{ document.course_name }}</strong></p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if document.tags %}
+                        <div class="mt-3">
+                            <small class="text-muted">Keywords:</small>
+                            <div>
+                                {% for tag in document.tags.split %}
+                                    <span class="tag"><i class="fas fa-tag me-1"></i>{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-2 bg-light rounded">
+                                <i class="fas fa-eye text-primary"></i>
+                                <span class="d-block">{{ document.view_count }}</span>
+                                <small class="text-muted">Views</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-2 bg-light rounded">
+                                <i class="fas fa-download text-success"></i>
+                                <span class="d-block">{{ document.download_count }}</span>
+                                <small class="text-muted">Downloads</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-2 bg-light rounded">
+                                <i class="fas fa-file text-info"></i>
+                                <span class="d-block">{{ document.file_size|default:'0' }} KB</span>
+                                <small class="text-muted">File Size</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card card-hover mb-4">
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{% url 'AppTodo:document_download' document.pk %}" class="btn btn-success">
+                            <i class="fas fa-download me-2"></i>Download Document
+                        </a>
+                        
+                        {% if user == document.uploaded_by %}
+                            <a href="{% url 'AppTodo:document_edit' document.pk %}" class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                            <a href="{% url 'AppTodo:document_delete' document.pk %}" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'AppTodo:home' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- File Preview -->
+            <div class="card card-hover mb-4">
+                <div class="card-body text-center">
+                    <i class="fas {{ document.get_file_icon }} file-icon" style="font-size: 4rem;"></i>
+                    <p class="mt-2 mb-0">{{ document.file.name|cut:"documents/" }}</p>
+                    <small class="text-muted">{{ document.get_file_extension|upper }}</small>
+                </div>
+            </div>
+            
+            <!-- Related Documents -->
+            {% if related_docs %}
+                <div class="card card-hover">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-link me-2"></i>Related Documents
+                    </div>
+                    <div class="card-body">
+                        {% for doc in related_docs %}
+                            <div class="mb-3">
+                                <a href="{% url 'AppTodo:document_detail' doc.pk %}" class="text-decoration-none">
+                                    <h6>{{ doc.title }}</h6>
+                                </a>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>{{ doc.uploaded_by.username }}
+                                </small>
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

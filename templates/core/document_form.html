@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+
+{% block title %}{{ title }} - DocShare{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-hover">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-{% if is_edit %}edit{% else %}upload{% endif %} me-2"></i>{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- FORM MANUAL - UPDATE HERE -->
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Please fix the errors:</strong>
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Document Title -->
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">
+                                {{ form.title.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                                {{ form.description.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- File -->
+                        <div class="mb-3">
+                            <label for="{{ form.file.id_for_label }}" class="form-label fw-bold">
+                                {{ form.file.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.file }}
+                            {% if form.file.help_text %}
+                                <small class="form-text text-muted">{{ form.file.help_text }}</small>
+                            {% endif %}
+                            {% if form.file.errors %}
+                                <div class="text-danger small">{{ form.file.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Document Type -->
+                        <div class="mb-3">
+                            <label for="{{ form.document_type.id_for_label }}" class="form-label fw-bold">
+                                {{ form.document_type.label }}
+                            </label>
+                            {{ form.document_type }}
+                            {% if form.document_type.errors %}
+                                <div class="text-danger small">{{ form.document_type.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Course Code -->
+                        <div class="mb-3">
+                            <label for="{{ form.course_code.id_for_label }}" class="form-label fw-bold">
+                                {{ form.course_code.label }}
+                            </label>
+                            {{ form.course_code }}
+                            {% if form.course_code.errors %}
+                                <div class="text-danger small">{{ form.course_code.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Course Name -->
+                        <div class="mb-3">
+                            <label for="{{ form.course_name.id_for_label }}" class="form-label fw-bold">
+                                {{ form.course_name.label }}
+                            </label>
+                            {{ form.course_name }}
+                            {% if form.course_name.errors %}
+                                <div class="text-danger small">{{ form.course_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Keywords (Tags) -->
+                        <div class="mb-3">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label fw-bold">
+                                {{ form.tags.label }}
+                            </label>
+                            {{ form.tags }}
+                            {% if form.tags.help_text %}
+                                <small class="form-text text-muted">{{ form.tags.help_text }}</small>
+                            {% endif %}
+                            {% if form.tags.errors %}
+                                <div class="text-danger small">{{ form.tags.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-gradient">
+                                <i class="fas fa-{% if is_edit %}save{% else %}upload{% endif %} me-2"></i>
+                                {{ button_text }}
+                            </button>
+                            <a href="{% url 'AppTodo:home' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Guidelines -->
+            <div class="card card-hover mt-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-info-circle text-primary me-2"></i>Upload Guidelines</h6>
+                    <ul class="small text-muted mb-0">
+                        <li>Document title and description are <strong>required</strong></li>
+                        <li>File size must not exceed <strong>20MB</strong></li>
+                        <li>Allowed types: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, ZIP, RAR</li>
+                        <li>Add keywords to make the document easier to find</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

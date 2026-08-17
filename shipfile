@@ -1,0 +1,7 @@
+script: |
+  pip install -r requirements.txt
+  python manage.py makemigrations
+  python manage.py migrate
+  python manage.py collectstatic --noinput
+
+run: gunicorn TodoProject.wsgi:application --bind 0.0.0.0:8000
