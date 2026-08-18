@@ -81,12 +81,8 @@ WSGI_APPLICATION = 'TodoProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mzumbe_hub',
-        'USER': 'postgres',
-        'PASSWORD': 'omari23..',
-        'HOST': 'localhost',
-        'PORT': '5432',
+         'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
