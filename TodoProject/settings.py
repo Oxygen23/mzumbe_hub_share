@@ -27,8 +27,12 @@ SECRET_KEY = 'django-insecure-y9v7oa(2^li_3e@-)_2^*#bne#tuz3me=#d#9t=bzvn3=is^)%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['mzumbe_hub','127.0.0.1']
-
+#ALLOWED_HOSTS = ['mzumbe_hub','127.0.0.1']
+ALLOWED_HOSTS = [
+    'mzumbehub.deploy.tz',
+    'localhost',
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -52,9 +56,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CSRF_COOKIE_SECURE = False  # Kwa development tu
-CSRF_COOKIE_HTTPONLY = False  # Kwa development tu
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+CSRF_COOKIE_SECURE = True  # Kwa development tu
+CSRF_COOKIE_HTTPONLY = True  # Kwa development tu
+#CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+CSRF_TRUSTED_ORIGINS = [
+    'https://mzumbehub.deploy.tz',
+]
+
 
 ROOT_URLCONF = 'TodoProject.urls'
 
